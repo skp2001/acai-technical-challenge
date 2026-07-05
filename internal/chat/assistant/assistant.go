@@ -21,6 +21,7 @@ func New() *Assistant {
 		&WeatherTool{},
 		&TodayDateTool{},
 		&HolidaysTool{},
+		&CalculatorTool{},
 	}
 
 	toolMap := make(map[string]Tool)

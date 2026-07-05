@@ -3,6 +3,7 @@ module github.com/acai-travel/tech-challenge
 go 1.24.1
 
 require (
+	github.com/Knetic/govaluate v3.0.0+incompatible
 	github.com/arran4/golang-ical v0.3.2
 	github.com/google/go-cmp v0.6.0
 	github.com/google/uuid v1.6.0
