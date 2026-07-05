@@ -144,7 +144,22 @@ func (a *Assistant) Reply(ctx context.Context, conv *model.Conversation) (string
 
 				switch call.Function.Name {
 				case "get_weather":
-					msgs = append(msgs, openai.ToolMessage("weather is fine", call.ID))
+					var payload struct {
+						Location string `json:"location"`
+					}
+
+					if err := json.Unmarshal([]byte(call.Function.Arguments), &payload); err != nil {
+						msgs = append(msgs, openai.ToolMessage("failed to parse weather arguments", call.ID))
+						break
+					}
+
+					weather, err := getWeather(ctx, payload.Location)
+					if err != nil {
+						msgs = append(msgs, openai.ToolMessage("failed to fetch weather: "+err.Error(), call.ID))
+						break
+					}
+
+					msgs = append(msgs, openai.ToolMessage(weather, call.ID))
 				case "get_today_date":
 					msgs = append(msgs, openai.ToolMessage(time.Now().Format(time.RFC3339), call.ID))
 				case "get_holidays":
