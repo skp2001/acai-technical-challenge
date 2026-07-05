@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+
+	"github.com/openai/openai-go/v2"
 )
 
 type weatherResponse struct {
@@ -61,4 +63,39 @@ func getWeather(ctx context.Context, location string) (string, error) {
 		weather.Current.WindKph,
 		weather.Current.Humidity,
 	), nil
+}
+
+// WeatherTool implements the Tool interface for fetching weather information.
+type WeatherTool struct{}
+
+func (t *WeatherTool) Name() string {
+	return "get_weather"
+}
+
+func (t *WeatherTool) Definition() openai.ChatCompletionToolUnionParam {
+	return openai.ChatCompletionFunctionTool(openai.FunctionDefinitionParam{
+		Name:        "get_weather",
+		Description: openai.String("Get weather at the given location"),
+		Parameters: openai.FunctionParameters{
+			"type": "object",
+			"properties": map[string]any{
+				"location": map[string]string{
+					"type": "string",
+				},
+			},
+			"required": []string{"location"},
+		},
+	})
+}
+
+func (t *WeatherTool) Execute(ctx context.Context, arguments string) (string, error) {
+	var payload struct {
+		Location string `json:"location"`
+	}
+
+	if err := json.Unmarshal([]byte(arguments), &payload); err != nil {
+		return "", fmt.Errorf("failed to parse weather arguments: %w", err)
+	}
+
+	return getWeather(ctx, payload.Location)
 }
