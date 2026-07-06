@@ -1,0 +1,23 @@
+# .gitignore
+# Binaries
+bin/
+# Build artefacts
+/build
+/dist
+
+# Go modules
+/go.mod
+/go.sum
+
+# Editor files
+*.swp
+*~
+
+# Environment files
+.env
+.env.local
+.env.*
+
+# OS generated files
+.DS_Store
+Thumbs.db
